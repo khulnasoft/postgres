@@ -1061,3 +1061,4 @@ CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
 --
 -- Dbmate schema migrations
 --
+
