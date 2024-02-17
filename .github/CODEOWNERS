@@ -1,4 +1,1 @@
-* @khulnasoft/backend
-migrations/ @khulnasoft/cli @khulnasoft/backend
-docker/orioledb @khulnasoft/postgres
-common.vars.pkr.hcl @khulnasoft/postgres @khulnasoft/backend
+* @gitworkflows
