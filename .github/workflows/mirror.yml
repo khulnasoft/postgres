@@ -38,5 +38,5 @@ jobs:
         with:
           src: docker.io/khulnasoft/postgres:${{ inputs.version }}
           dst: |
-            public.ecr.aws/khulnasoft/postgres:${{ inputs.version }}
+            public.ecr.aws/supabase/postgres:${{ inputs.version }}
             ghcr.io/khulnasoft/postgres:${{ inputs.version }}

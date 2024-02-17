@@ -2,7 +2,7 @@
 
 - name: vault - download vault
   get_url:
-    url: "https://github.com/khulnasoft/vault/archive/refs/tags/v{{ vault_release }}.tar.gz"
+    url: "https://github.com/supabase/vault/archive/refs/tags/v{{ vault_release }}.tar.gz"
     dest: /tmp/vault-{{ vault_release }}.tar.gz
     checksum: "{{ vault_release_checksum }}"
     timeout: 60

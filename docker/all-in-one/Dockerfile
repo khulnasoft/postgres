@@ -81,7 +81,7 @@ ADD "https://packages.konghq.com/public/gateway-28/deb/ubuntu/pool/focal/main/k/
 ####################
 FROM base as adminapi
 ARG adminapi_release
-ADD "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/khulnasoft-admin-api/v${adminapi_release}/khulnasoft-admin-api_${adminapi_release}_linux_${TARGETARCH}.tar.gz" /tmp/khulnasoft-admin-api.tar.gz
+ADD "https://supabase-public-artifacts-bucket.s3.amazonaws.com/khulnasoft-admin-api/v${adminapi_release}/khulnasoft-admin-api_${adminapi_release}_linux_${TARGETARCH}.tar.gz" /tmp/khulnasoft-admin-api.tar.gz
 RUN tar -xvf /tmp/khulnasoft-admin-api.tar.gz -C /tmp && \
     rm -rf /tmp/khulnasoft-admin-api.tar.gz
 
@@ -90,7 +90,7 @@ RUN tar -xvf /tmp/khulnasoft-admin-api.tar.gz -C /tmp && \
 ####################
 FROM base as adminmgr
 ARG adminmgr_release
-ADD "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/admin-mgr/v${adminmgr_release}/admin-mgr_${adminmgr_release}_linux_${TARGETARCH}.tar.gz" /tmp/admin-mgr.tar.gz
+ADD "https://supabase-public-artifacts-bucket.s3.amazonaws.com/admin-mgr/v${adminmgr_release}/admin-mgr_${adminmgr_release}_linux_${TARGETARCH}.tar.gz" /tmp/admin-mgr.tar.gz
 RUN tar -xvf /tmp/admin-mgr.tar.gz -C /tmp && \
     rm -rf /tmp/admin-mgr.tar.gz
 

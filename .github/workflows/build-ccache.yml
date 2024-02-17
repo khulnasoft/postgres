@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  image_tag: public.ecr.aws/khulnasoft/postgres:ccache
+  image_tag: public.ecr.aws/supabase/postgres:ccache
 permissions:
   contents: read
   packages: write
