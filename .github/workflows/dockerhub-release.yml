@@ -1,9 +1,10 @@
 name: Release on Dockerhub
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - develop
+      - main
     paths:
       - ".github/workflows/dockerhub-release.yml"
       - "common.vars*"
