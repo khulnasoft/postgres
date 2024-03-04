@@ -24,9 +24,10 @@ ARG rum_release=1.3.13
 ARG pg_hashids_release=cd0e1b31d52b394a0df64079406a14a4f7387cd6
 ARG libsodium_release=1.0.18
 ARG pgsodium_release=3.1.6
-ARG pg_graphql_release=1.2.2
+ARG pg_graphql_release=1.5.1
 ARG pg_stat_monitor_release=1.1.1
 ARG pg_jsonschema_release=0.1.4
+ARG pg_repack_release=1.4.8
 ARG vault_release=0.2.8
 ARG groonga_release=12.0.8
 ARG pgroonga_release=2.4.0
@@ -135,7 +136,7 @@ FROM ccache as sfcgal
 ARG sfcgal_release
 ARG sfcgal_release_checksum
 ADD --checksum=${sfcgal_release_checksum} \
-    "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/sfcgal/SFCGAL-v${sfcgal_release}.tar.gz" \
+    "https://supabase-public-artifacts-bucket.s3.amazonaws.com/sfcgal/SFCGAL-v${sfcgal_release}.tar.gz" \
     /tmp/sfcgal.tar.gz
 RUN tar -xvf /tmp/sfcgal.tar.gz -C /tmp --one-top-level --strip-components 1 && \
     rm -rf /tmp/sfcgal.tar.gz
@@ -159,7 +160,7 @@ FROM sfcgal as postgis-source
 ARG postgis_release
 ARG postgis_release_checksum
 ADD --checksum=${postgis_release_checksum} \
-    "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/postgis-${postgis_release}.tar.gz" \
+    "https://supabase-public-artifacts-bucket.s3.amazonaws.com/postgis-${postgis_release}.tar.gz" \
     /tmp/postgis.tar.gz
 RUN tar -xvf /tmp/postgis.tar.gz -C /tmp && \
     rm -rf /tmp/postgis.tar.gz
@@ -412,7 +413,7 @@ FROM builder as pljava-source
 ARG pljava_release=master
 ARG pljava_release_checksum=sha256:e99b1c52f7b57f64c8986fe6ea4a6cc09d78e779c1643db060d0ac66c93be8b6
 ADD --checksum=${pljava_release_checksum} \
-    "https://github.com/khulnasoft/pljava/archive/refs/heads/${pljava_release}.tar.gz" \
+    "https://github.com/supabase/pljava/archive/refs/heads/${pljava_release}.tar.gz" \
     /tmp/pljava.tar.gz
 RUN tar -xvf /tmp/pljava.tar.gz -C /tmp && \
     rm -rf /tmp/pljava.tar.gz
@@ -445,7 +446,7 @@ FROM ccache as plv8-source
 ARG plv8_release
 ARG plv8_release_checksum
 ADD --checksum=${plv8_release_checksum} \
-    "https://github.com/plv8/plv8/archive/refs/tags/v${plv8_release}.tar.gz" \
+    "https://github.com/supabase/plv8/archive/refs/tags/v${plv8_release}.tar.gz" \
     /tmp/plv8.tar.gz
 RUN tar -xvf /tmp/plv8.tar.gz -C /tmp && \
     rm -rf /tmp/plv8.tar.gz
@@ -456,6 +457,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ninja-build \
     git \
     libtinfo5 \
+    libstdc++-10-dev \
     && rm -rf /var/lib/apt/lists/*
 # Build from source
 WORKDIR /tmp/plv8-${plv8_release}
@@ -468,7 +470,7 @@ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
 FROM scratch as plv8-deb
 COPY --from=plv8-source /tmp/*.deb /tmp/
 
-FROM ghcr.io/khulnasoft/plv8:${plv8_release}-pg${postgresql_major} as plv8
+FROM ghcr.io/supabase/plv8:${plv8_release}-pg${postgresql_major} as plv8
 
 ####################
 # 14-pg_plan_filter.yml
@@ -493,7 +495,7 @@ FROM ccache as pg_net-source
 ARG pg_net_release
 ARG pg_net_release_checksum
 ADD --checksum=${pg_net_release_checksum} \
-    "https://github.com/khulnasoft/pg_net/archive/refs/tags/v${pg_net_release}.tar.gz" \
+    "https://github.com/supabase/pg_net/archive/refs/tags/v${pg_net_release}.tar.gz" \
     /tmp/pg_net.tar.gz
 RUN tar -xvf /tmp/pg_net.tar.gz -C /tmp && \
     rm -rf /tmp/pg_net.tar.gz
@@ -587,7 +589,7 @@ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --requir
 FROM base as pg_graphql
 # Download package archive
 ARG pg_graphql_release
-ADD "https://github.com/khulnasoft/pg_graphql/releases/download/v${pg_graphql_release}/pg_graphql-v${pg_graphql_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
+ADD "https://github.com/supabase/pg_graphql/releases/download/v${pg_graphql_release}/pg_graphql-v${pg_graphql_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
     /tmp/pg_graphql.deb
 
 ####################
@@ -620,7 +622,7 @@ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
 FROM base as pg_jsonschema
 # Download package archive
 ARG pg_jsonschema_release
-ADD "https://github.com/khulnasoft/pg_jsonschema/releases/download/v${pg_jsonschema_release}/pg_jsonschema-v${pg_jsonschema_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
+ADD "https://github.com/supabase/pg_jsonschema/releases/download/v${pg_jsonschema_release}/pg_jsonschema-v${pg_jsonschema_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
     /tmp/pg_jsonschema.deb
 
 ####################
@@ -631,7 +633,7 @@ FROM builder as vault-source
 ARG vault_release
 ARG vault_release_checksum
 ADD --checksum=${vault_release_checksum} \
-    "https://github.com/khulnasoft/vault/archive/refs/tags/v${vault_release}.tar.gz" \
+    "https://github.com/supabase/vault/archive/refs/tags/v${vault_release}.tar.gz" \
     /tmp/vault.tar.gz
 RUN tar -xvf /tmp/vault.tar.gz -C /tmp && \
     rm -rf /tmp/vault.tar.gz
@@ -713,7 +715,7 @@ RUN mv /var/cache/apt/archives/*.deb /tmp/
 FROM base as wrappers
 # Download package archive
 ARG wrappers_release
-ADD "https://github.com/khulnasoft/wrappers/releases/download/v${wrappers_release}/wrappers-v${wrappers_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
+ADD "https://github.com/supabase/wrappers/releases/download/v${wrappers_release}/wrappers-v${wrappers_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
     /tmp/wrappers.deb
 
 ####################
@@ -734,6 +736,32 @@ RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:cc
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
+
+####################
+ # 27-pg_repack.yml
+ ####################
+ FROM ccache as pg_repack-source
+ ARG pg_repack_release
+ ARG pg_repack_release_checksum
+ ADD --checksum=${pg_repack_release_checksum} \
+     "https://github.com/reorg/pg_repack/archive/refs/tags/ver_${pg_repack_release}.tar.gz" \
+     /tmp/pg_repack.tar.gz
+ RUN tar -xvf /tmp/pg_repack.tar.gz -C /tmp && \
+     rm -rf /tmp/pg_repack.tar.gz
+ # Install build dependencies
+ RUN apt-get update && apt-get install -y --no-install-recommends \
+     liblz4-dev \
+     libz-dev \
+     libzstd-dev \
+     libreadline-dev \
+     && rm -rf /var/lib/apt/lists/*
+ # Build from source
+ WORKDIR /tmp/pg_repack-ver_${pg_repack_release}
+ ENV USE_PGXS=1
+ RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+     make -j$(nproc)
+ # Create debian package
+ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --pkgversion=${pg_repack_release} --nodoc
 
 ####################
 # 28-pgvector.yml
@@ -781,7 +809,7 @@ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
 FROM base as supautils
 # Download package archive
 ARG supautils_release
-ADD "https://github.com/khulnasoft/supautils/releases/download/v${supautils_release}/supautils-v${supautils_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
+ADD "https://github.com/supabase/supautils/releases/download/v${supautils_release}/supautils-v${supautils_release}-pg${postgresql_major}-${TARGETARCH}-linux-gnu.deb" \
     /tmp/supautils.deb
 
 ####################
@@ -826,6 +854,7 @@ COPY --from=vault-source /tmp/*.deb /tmp/
 COPY --from=pgroonga-source /tmp/*.deb /tmp/
 COPY --from=wrappers /tmp/*.deb /tmp/
 COPY --from=hypopg-source /tmp/*.deb /tmp/
+COPY --from=pg_repack-source /tmp/*.deb /tmp/
 COPY --from=pgvector-source /tmp/*.deb /tmp/
 COPY --from=pg_tle-source /tmp/*.deb /tmp/
 COPY --from=supautils /tmp/*.deb /tmp/

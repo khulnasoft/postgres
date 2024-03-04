@@ -1,5 +1,5 @@
 -- migrate:up
-revoke khulnasoft_admin from authenticator;
+revoke supabase_admin from authenticator;
 
 -- migrate:down
 

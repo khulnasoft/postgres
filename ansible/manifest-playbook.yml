@@ -17,7 +17,7 @@
     # currently, we upload gotrue, adminapi, postgrest
     - name: gotrue - download commit archive
       get_url:
-        url: "https://github.com/khulnasoft/gotrue/releases/download/v{{ gotrue_release }}/auth-v{{ gotrue_release }}-arm64.tar.gz"
+        url: "https://github.com/supabase/gotrue/releases/download/v{{ gotrue_release }}/auth-v{{ gotrue_release }}-arm64.tar.gz"
         dest: /tmp/gotrue.tar.gz
         checksum: "{{ gotrue_release_checksum }}"
         timeout: 60
@@ -47,7 +47,7 @@
 
     - name: Download adminapi archive
       get_url:
-        url: "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/khulnasoft-admin-api/v{{ adminapi_release }}/khulnasoft-admin-api_{{ adminapi_release }}_linux_arm64.tar.gz"
+        url: "https://supabase-public-artifacts-bucket.s3.amazonaws.com/supabase-admin-api/v{{ adminapi_release }}/supabase-admin-api_{{ adminapi_release }}_linux_arm64.tar.gz"
         dest: "/tmp/adminapi.tar.gz"
         timeout: 90
 
@@ -59,11 +59,11 @@
 
     - name: adminapi - pack archive
       shell: |
-        cd /tmp && tar -cJf khulnasoft-admin-api-{{ adminapi_release }}-arm64.tar.xz khulnasoft-admin-api
+        cd /tmp && tar -cJf supabase-admin-api-{{ adminapi_release }}-arm64.tar.xz supabase-admin-api
 
     - name: Download admin-mgr archive
       get_url:
-        url: "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/admin-mgr/v{{ adminmgr_release }}/admin-mgr_{{ adminmgr_release }}_linux_arm64.tar.gz"
+        url: "https://supabase-public-artifacts-bucket.s3.amazonaws.com/admin-mgr/v{{ adminmgr_release }}/admin-mgr_{{ adminmgr_release }}_linux_arm64.tar.gz"
         dest: "/tmp/admin-mgr.tar.gz"
         timeout: 90
 
@@ -85,7 +85,7 @@
           file: gotrue-v{{ gotrue_release }}-arm64.tar.xz
         - service: postgrest
           file: postgrest-{{ postgrest_release }}-arm64.tar.xz
-        - service: khulnasoft-admin-api
-          file: khulnasoft-admin-api-{{ adminapi_release }}-arm64.tar.xz
+        - service: supabase-admin-api
+          file: supabase-admin-api-{{ adminapi_release }}-arm64.tar.xz
         - service: admin-mgr
           file: admin-mgr-{{ adminmgr_release }}-arm64.tar.xz

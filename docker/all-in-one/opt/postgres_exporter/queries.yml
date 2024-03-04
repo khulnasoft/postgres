@@ -218,7 +218,7 @@ realtime:
 replication:
   master: true
   cache_seconds: 60
-  query: "SELECT slot_name, pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) AS realtime_lag_bytes, active AS realtime_slot_status FROM pg_replication_slots WHERE slot_name LIKE ANY (ARRAY['realtime', 'realtime_rls',  'khulnasoft_realtime_replication_slot%'])"
+  query: "SELECT slot_name, pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) AS realtime_lag_bytes, active AS realtime_slot_status FROM pg_replication_slots WHERE slot_name LIKE ANY (ARRAY['realtime', 'realtime_rls',  'supabase_realtime_replication_slot%'])"
   metrics:
     - realtime_slot_name:
         usage: "LABEL"
@@ -239,7 +239,7 @@ storage:
         usage: "GAUGE"
         description: "The total size used for all storage buckets, in mb"
 
-khulnasoft_usage_metrics:
+supabase_usage_metrics:
   # pg_stat_statements collects metrics from all databases on the cluster, so querying just the master db should be sufficient
   master: true
   cache_seconds: 60

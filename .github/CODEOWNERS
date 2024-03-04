@@ -1,4 +1,4 @@
-* @khulnasoft/backend
-migrations/ @khulnasoft/cli @khulnasoft/backend
+* @supabase/backend
+migrations/ @supabase/cli @supabase/backend
 docker/orioledb @khulnasoft/postgres
-common.vars.pkr.hcl @khulnasoft/postgres @khulnasoft/backend
+common.vars.pkr.hcl @khulnasoft/postgres @supabase/backend

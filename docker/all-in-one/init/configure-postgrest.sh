@@ -37,5 +37,5 @@ fi
   
 PGRST_CONF=/etc/postgrest/generated.conf
 
-/opt/khulnasoft-admin-api optimize postgrest --destination-config-file-path $PGRST_CONF
+/opt/supabase-admin-api optimize postgrest --destination-config-file-path $PGRST_CONF
 cat /etc/postgrest/base.conf >> $PGRST_CONF

@@ -11,7 +11,7 @@ if [ -f "$REPORTING_CREDENTIALS_FILE" ]; then
 fi
 
 function run_sql {
-    psql -h localhost -U khulnasoft_admin -d postgres "$@"
+    psql -h localhost -U supabase_admin -d postgres "$@"
 }
 
 function ship_logs {
@@ -36,7 +36,7 @@ function ship_logs {
     DERIVED_REF="${HOSTNAME##*-}"
 
     printf -v BODY '{ "ref": "%s", "step": "%s", "content": %s }' "$DERIVED_REF" "completion" "$(cat "$LOG_FILE" | jq -Rs '.')"
-    curl -sf -X POST "https://$REPORTING_PROJECT_REF.khulnasoft.co/rest/v1/error_logs" \
+    curl -sf -X POST "https://$REPORTING_PROJECT_REF.supabase.co/rest/v1/error_logs" \
          -H "apikey: ${REPORTING_ANON_KEY}" \
          -H 'Content-type: application/json' \
          -d "$BODY"

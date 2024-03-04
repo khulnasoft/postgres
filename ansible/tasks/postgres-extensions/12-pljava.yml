@@ -27,7 +27,7 @@
 - name: pljava - download latest release
   become: yes
   git:
-    repo: https://github.com/khulnasoft/pljava.git
+    repo: https://github.com/supabase/pljava.git
     dest: /tmp/pljava-{{ pljava_release }}
     version: "{{ pljava_release }}"
 

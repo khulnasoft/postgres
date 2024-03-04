@@ -50,7 +50,7 @@ jobs:
           docker run --rm --pull=never \
           -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
           -p ${{ env.POSTGRES_PORT }}:5432 \
-          --name khulnasoft_postgres \
+          --name supabase_postgres \
           -d khulnasoft/postgres:latest
 
       - name: Install psql
@@ -79,7 +79,7 @@ jobs:
           echo "$container container is healthy"
         env:
           retries: 20
-          container: khulnasoft_postgres
+          container: supabase_postgres
 
       - name: Run tests
         run: pg_prove migrations/tests/test.sql
@@ -87,7 +87,7 @@ jobs:
           PGHOST: localhost
           PGPORT: ${{ env.POSTGRES_PORT }}
           PGDATABASE: postgres
-          PGUSER: khulnasoft_admin
+          PGUSER: supabase_admin
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
       - name: Check migrations are idempotent
@@ -100,7 +100,7 @@ jobs:
           PGHOST: localhost
           PGPORT: ${{ env.POSTGRES_PORT }}
           PGDATABASE: postgres
-          PGUSER: khulnasoft_admin
+          PGUSER: supabase_admin
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
   schema:

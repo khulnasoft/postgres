@@ -21,8 +21,8 @@
 
 - name: ansible facts
   copy:
-    src: files/khulnasoft_facts.ini
-    dest: /etc/ansible/facts.d/khulnasoft.fact
+    src: files/supabase_facts.ini
+    dest: /etc/ansible/facts.d/supabase.fact
 
 - name: reload systemd
   systemd:

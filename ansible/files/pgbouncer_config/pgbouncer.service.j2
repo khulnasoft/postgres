@@ -3,7 +3,7 @@ Description=connection pooler for PostgreSQL
 Documentation=man:pgbouncer(1)
 Documentation=https://www.pgbouncer.org/
 After=network.target
-{% if khulnasoft_internal is defined %}
+{% if supabase_internal is defined %}
 Requires=database-optimizations.service
 After=database-optimizations.service
 {% endif %}

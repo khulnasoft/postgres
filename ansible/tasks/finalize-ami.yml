@@ -26,14 +26,14 @@
     rule: allow
     port: http
   tags:
-  - install-khulnasoft-internal 
+  - install-supabase-internal 
 
 - name: UFW - Allow connections to https (443)
   ufw:
     rule: allow
     port: https
   tags:
-  - install-khulnasoft-internal 
+  - install-supabase-internal 
 
 - name: UFW - Deny all other incoming traffic by default
   ufw:

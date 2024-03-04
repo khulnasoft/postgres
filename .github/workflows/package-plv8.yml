@@ -9,7 +9,7 @@ on:
       - "Dockerfile"
 
 env:
-  image: ghcr.io/khulnasoft/plv8
+  image: ghcr.io/supabase/plv8
 permissions:
   contents: read
   packages: write

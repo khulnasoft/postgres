@@ -25,7 +25,7 @@ fi
 # Inject project specific configuration
 sed -i -e "s|anon_key|$ANON_KEY|g" \
   -e "s|service_key|$SERVICE_ROLE_KEY|g" \
-  -e "s|khulnasoft_admin_key|$ADMIN_API_KEY|g" \
+  -e "s|supabase_admin_key|$ADMIN_API_KEY|g" \
   $KONG_CONF
 
 # Update kong ports

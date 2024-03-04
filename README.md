@@ -25,7 +25,8 @@ Unmodified Postgres with some useful plugins. Our goal with this repo is not to 
 | [PL/Java](https://github.com/tada/pljava) | [1.6.4](https://github.com/tada/pljava/releases/tag/V1_6_4) | Write in Java functions in Postgres. |
 | [plv8](https://github.com/plv8/plv8) | [commit](https://github.com/plv8/plv8/commit/bcddd92f71530e117f2f98b92d206dafe824f73a) | Write in Javascript functions in Postgres. |
 | [pg_plan_filter](https://github.com/pgexperts/pg_plan_filter) | [commit](https://github.com/pgexperts/pg_plan_filter/commit/5081a7b5cb890876e67d8e7486b6a64c38c9a492) | Only allow statements that fulfill set criteria to be executed. |
-| [pg_net](https://github.com/khulnasoft/pg_net) | [v0.6.1](https://github.com/khulnasoft/pg_net/releases/tag/v0.6.1) | Expose the SQL interface for async networking. |
+| [pg_net](https://github.com/supabase/pg_net) | [v0.6.1](https://github.com/supabase/pg_net/releases/tag/v0.6.1) | Expose the SQL interface for async networking. |
+| [pg_repack](https://github.com/reorg/pg_repack) | [ver_1.5.0](https://github.com/reorg/pg_repack/releases/tag/ver_1.5.0) | Tool to remove bloat from tables and indexes
 | [rum](https://github.com/postgrespro/rum) | [1.3.13](https://github.com/postgrespro/rum/releases/tag/1.3.13) | An alternative to the GIN index. |
 | [pg_hashids](https://github.com/iCyberon/pg_hashids) | [commit](https://github.com/iCyberon/pg_hashids/commit/83398bcbb616aac2970f5e77d93a3200f0f28e74) | Generate unique identifiers from numbers. |
 | [pgsodium](https://github.com/michelp/pgsodium) | [3.1.0](https://github.com/michelp/pgsodium/releases/tag/2.0.0) | Modern encryption API using libsodium. |
@@ -33,7 +34,7 @@ Unmodified Postgres with some useful plugins. Our goal with this repo is not to 
 | [pgvector](https://github.com/pgvector/pgvector) | [v0.4.0](https://github.com/pgvector/pgvector/releases/tag/v0.4.0) | Open-source vector similarity search for Postgres
 
 
-Can't find your favorite extension? Suggest for it to be added into future releases [here](https://github.com/khulnasoft/khulnasoft/discussions/679)!
+Can't find your favorite extension? Suggest for it to be added into future releases [here](https://github.com/supabase/supabase/discussions/679)!
 
 ## Enhanced Security
 *This is only available for our AWS EC2/ DO Droplet images*
@@ -64,18 +65,18 @@ See all installation instructions in the [repo wiki](https://github.com/khulnaso
 ### Marketplace Images
 |   | Postgres & Extensions | PgBouncer | PostgREST | WAL-G |
 |---|:---:|:---:|:---:|:---:|
-| Khulnasoft Postgres |  ✔️   | ❌    | ❌   |  ✔️   |
-| Khulnasoft Postgres: PgBouncer Bundle  |  ✔️   |  ✔️  | ❌    |   ✔️ |
-| Khulnasoft Postgres: PostgREST Bundle |  ✔️   |  ❌  |  ✔️   |   ✔️ |
-| Khulnasoft Postgres: Complete Bundle |  ✔️  |  ✔️   | ✔️   | ✔️   |
+| Supabase Postgres |  ✔️   | ❌    | ❌   |  ✔️   |
+| Supabase Postgres: PgBouncer Bundle  |  ✔️   |  ✔️  | ❌    |   ✔️ |
+| Supabase Postgres: PostgREST Bundle |  ✔️   |  ❌  |  ✔️   |   ✔️ |
+| Supabase Postgres: Complete Bundle |  ✔️  |  ✔️   | ✔️   | ✔️   |
 
 #### Availability
 |   | AWS ARM | AWS x86 | Digital Ocean x86 |
 |---|:---:|:---:|:---:|
-| Khulnasoft Postgres | Coming Soon | Coming Soon | Coming Soon |
-| Khulnasoft Postgres: PgBouncer Bundle  | Coming Soon | Coming Soon | Coming Soon |
-| Khulnasoft Postgres: PostgREST Bundle | Coming Soon | Coming Soon | Coming Soon |
-| Khulnasoft Postgres: Complete Bundle | Coming Soon | Coming Soon | Coming Soon |
+| Supabase Postgres | Coming Soon | Coming Soon | Coming Soon |
+| Supabase Postgres: PgBouncer Bundle  | Coming Soon | Coming Soon | Coming Soon |
+| Supabase Postgres: PostgREST Bundle | Coming Soon | Coming Soon | Coming Soon |
+| Supabase Postgres: Complete Bundle | Coming Soon | Coming Soon | Coming Soon |
 
 ### Quick Build
 
@@ -91,7 +92,7 @@ $ time packer build -timestamp-ui \
 
 - Make it fast and simple to get started with Postgres.
 - Show off a few of Postgres' most exciting features.
-- This is the same build we offer at [Khulnasoft](https://khulnasoft.io).
+- This is the same build we offer at [Supabase](https://supabase.io).
 
 ## Roadmap
 
@@ -107,4 +108,4 @@ $ time packer build -timestamp-ui \
 
 We are building the features of Firebase using enterprise-grade, open source products. We support existing communities wherever possible, and if the products don’t exist we build them and open source them ourselves.
 
-[![New Sponsor](https://user-images.githubusercontent.com/10214025/90518111-e74bbb00-e198-11ea-8f88-c9e3c1aa4b5b.png)](https://github.com/sponsors/khulnasoft)
+[![New Sponsor](https://user-images.githubusercontent.com/10214025/90518111-e74bbb00-e198-11ea-8f88-c9e3c1aa4b5b.png)](https://github.com/sponsors/supabase)
