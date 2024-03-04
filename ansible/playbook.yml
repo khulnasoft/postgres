@@ -20,9 +20,9 @@
 
   tasks:
     - set_fact:
-        khulnasoft_internal: true
+        supabase_internal: true
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - set_fact:
         parallel_jobs: 16
@@ -34,7 +34,7 @@
       import_tasks: tasks/setup-pgbouncer.yml
       tags:
         - install-pgbouncer
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Install WAL-G
       import_tasks: tasks/setup-wal-g.yml
@@ -43,33 +43,33 @@
       import_tasks: tasks/setup-gotrue.yml
       tags:
         - install-gotrue
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Install PostgREST
       import_tasks: tasks/setup-postgrest.yml
       tags:
         - install-postgrest
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Install Envoy
       import_tasks: tasks/setup-envoy.yml
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Install Kong
       import_tasks: tasks/setup-kong.yml
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Install nginx
       import_tasks: tasks/setup-nginx.yml
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
-    - name: Install Khulnasoft specific content
-      import_tasks: tasks/setup-khulnasoft-internal.yml
+    - name: Install Supabase specific content
+      import_tasks: tasks/setup-supabase-internal.yml
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Start Postgres Database
       systemd:
@@ -111,12 +111,12 @@
     - name: First boot optimizations
       import_tasks: tasks/internal/optimizations.yml
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Finalize AMI
       import_tasks: tasks/finalize-ami.yml
       tags:
-        - install-khulnasoft-internal
+        - install-supabase-internal
 
     - name: Enhance fail2ban
       import_tasks: tasks/setup-fail2ban.yml

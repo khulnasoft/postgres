@@ -61,7 +61,7 @@ FROM postgrest/postgrest:v${postgrest_release} as pgrst
 ####################
 # Install GoTrue
 ####################
-FROM khulnasoft/gotrue:v${gotrue_release} as gotrue
+FROM supabase/gotrue:v${gotrue_release} as gotrue
 
 ####################
 # Install Envoy
@@ -81,9 +81,9 @@ ADD "https://packages.konghq.com/public/gateway-28/deb/ubuntu/pool/focal/main/k/
 ####################
 FROM base as adminapi
 ARG adminapi_release
-ADD "https://supabase-public-artifacts-bucket.s3.amazonaws.com/khulnasoft-admin-api/v${adminapi_release}/khulnasoft-admin-api_${adminapi_release}_linux_${TARGETARCH}.tar.gz" /tmp/khulnasoft-admin-api.tar.gz
-RUN tar -xvf /tmp/khulnasoft-admin-api.tar.gz -C /tmp && \
-    rm -rf /tmp/khulnasoft-admin-api.tar.gz
+ADD "https://supabase-public-artifacts-bucket.s3.amazonaws.com/supabase-admin-api/v${adminapi_release}/supabase-admin-api_${adminapi_release}_linux_${TARGETARCH}.tar.gz" /tmp/supabase-admin-api.tar.gz
+RUN tar -xvf /tmp/supabase-admin-api.tar.gz -C /tmp && \
+    rm -rf /tmp/supabase-admin-api.tar.gz
 
 ####################
 # Install admin mgr
@@ -158,13 +158,13 @@ COPY --from=pgrst /bin/postgrest /dist/
 COPY --from=gotrue /usr/local/bin/auth /dist/gotrue
 COPY --from=gotrue /usr/local/etc/auth /opt/gotrue/
 COPY --from=envoy /usr/local/bin/envoy /dist/
-COPY --from=adminapi /tmp/khulnasoft-admin-api /dist/
+COPY --from=adminapi /tmp/supabase-admin-api /dist/
 COPY --chown=root:root --from=adminmgr /tmp/admin-mgr /dist/
 COPY --from=exporter /tmp/postgres_exporter /opt/postgres_exporter/
 COPY docker/all-in-one/opt/postgres_exporter /opt/postgres_exporter/
 
 # Configuring dangling symlinks for binaries
-RUN ln -s /data/opt/khulnasoft-admin-api /opt/khulnasoft-admin-api \
+RUN ln -s /data/opt/supabase-admin-api /opt/supabase-admin-api \
     && ln -s /data/opt/postgrest /opt/postgrest \
     && ln -s /data/opt/gotrue /opt/gotrue/gotrue \
     && ln -s /data/opt/admin-mgr /usr/bin/admin-mgr
@@ -208,7 +208,10 @@ COPY docker/all-in-one/etc/logrotate.d/postgresql.conf /etc/logrotate.d/postgres
 COPY docker/all-in-one/etc/gotrue.env /etc/gotrue.env
 
 # Customizations for envoy
+ARG envoy_release
+ADD --chmod=755 --chown=envoy:envoy "https://raw.githubusercontent.com/envoyproxy/envoy/v${envoy_release}/restarter/hot-restarter.py" /opt/envoy-hot-restarter.py
 COPY --chmod=775 --chown=envoy:envoy ansible/files/envoy_config/ /etc/envoy/
+COPY --chmod=755 --chown=envoy:envoy ansible/files/start-envoy.sh /opt/
 
 # Customizations for kong
 COPY docker/all-in-one/etc/kong/kong.conf /etc/kong/kong.conf

@@ -1,1 +1,4 @@
-* @gitworkflows
+* @supabase/backend
+migrations/ @supabase/cli @supabase/backend
+docker/orioledb @khulnasoft/postgres
+common.vars.pkr.hcl @khulnasoft/postgres @supabase/backend

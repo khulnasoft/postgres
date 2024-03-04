@@ -50,7 +50,7 @@ for layer in /tmp/build/*/layer.tar; do
 done
 
 # build AMI
-AWS_PROFILE=khulnasoft-dev packer build \
+AWS_PROFILE=supabase-dev packer build \
   -var-file=development-arm.vars.pkr.hcl \
   -var-file=common.vars.pkr.hcl \
   -var "ansible_arguments=" \
@@ -61,5 +61,5 @@ AWS_PROFILE=khulnasoft-dev packer build \
   amazon-arm64.pkr.hcl
 
 # run tests
-AWS_PROFILE=khulnasoft-dev pytest -vv -s testinfra/test_*.py
+AWS_PROFILE=supabase-dev pytest -vv -s testinfra/test_*.py
 ```

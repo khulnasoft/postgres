@@ -21,7 +21,7 @@ export PGPASSWORD="${POSTGRES_PASSWORD:-}"
 # if args are supplied, simply forward to dbmate
 connect="$PGPASSWORD@$PGHOST:$PGPORT/$PGDATABASE?sslmode=disable"
 if [ "$#" -ne 0 ]; then
-    export DATABASE_URL="${DATABASE_URL:-postgres://khulnasoft_admin:$connect}"
+    export DATABASE_URL="${DATABASE_URL:-postgres://supabase_admin:$connect}"
     exec dbmate "$@"
     exit 0
 fi
@@ -33,26 +33,26 @@ if [ -z "${USE_DBMATE:-}" ]; then
         echo "$0: running $sql"
         psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U postgres -f "$sql"
     done
-    psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U postgres -c "ALTER USER khulnasoft_admin WITH PASSWORD '$PGPASSWORD'"
+    psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U postgres -c "ALTER USER supabase_admin WITH PASSWORD '$PGPASSWORD'"
     # run migrations as super user - postgres user demoted in post-setup
     for sql in "$db"/migrations/*.sql; do
         echo "$0: running $sql"
-        psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U khulnasoft_admin -f "$sql"
+        psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U supabase_admin -f "$sql"
     done
 else
     # run init scripts as postgres user
     DBMATE_MIGRATIONS_DIR="$db/init-scripts" DATABASE_URL="postgres://postgres:$connect" dbmate --no-dump-schema migrate
-    psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U postgres -c "ALTER USER khulnasoft_admin WITH PASSWORD '$PGPASSWORD'"
+    psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U postgres -c "ALTER USER supabase_admin WITH PASSWORD '$PGPASSWORD'"
     # run migrations as super user - postgres user demoted in post-setup
-    DBMATE_MIGRATIONS_DIR="$db/migrations" DATABASE_URL="postgres://khulnasoft_admin:$connect" dbmate --no-dump-schema migrate
+    DBMATE_MIGRATIONS_DIR="$db/migrations" DATABASE_URL="postgres://supabase_admin:$connect" dbmate --no-dump-schema migrate
 fi
 
 # run any post migration script to update role passwords
 postinit="/etc/postgresql.schema.sql"
 if [ -e "$postinit" ]; then
     echo "$0: running $postinit"
-    psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U khulnasoft_admin -f "$postinit"
+    psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U supabase_admin -f "$postinit"
 fi
 
 # once done with everything, reset stats from init
-psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U khulnasoft_admin -c 'SELECT extensions.pg_stat_statements_reset(); SELECT pg_stat_reset();' || true
+psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U supabase_admin -c 'SELECT extensions.pg_stat_statements_reset(); SELECT pg_stat_reset();' || true

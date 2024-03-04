@@ -1,4 +1,4 @@
-# Welcome to Khulnasoft Postgres contributing guide
+# Welcome to Supabase Postgres contributing guide
 
 ## Adding a new extension
 
