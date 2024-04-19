@@ -22,12 +22,12 @@ set -euo pipefail
 docker buildx build \
   $(yq 'to_entries | map(select(.value|type == "!!str")) |  map(" --build-arg " + .key + "=" + .value) | join("")' 'ansible/vars.yml') \
   --target=extensions \
-  --tag=khulnasoft/postgres:extensions \
+  --tag=supabase/postgres:extensions \
   --platform=linux/arm64 \
   --load \
   .
 mkdir -p /tmp/extensions ansible/files/extensions
-docker save khulnasoft/postgres:extensions | tar xv -C /tmp/extensions
+docker save supabase/postgres:extensions | tar xv -C /tmp/extensions
 for layer in /tmp/extensions/*/layer.tar; do
   tar xvf "$layer" -C ansible/files/extensions --strip-components 1
 done
@@ -39,18 +39,18 @@ docker buildx build \
   --build-arg CPPFLAGS=-mcpu=neoverse-n1 \
   --file=docker/Dockerfile \
   --target=pg-deb \
-  --tag=khulnasoft/postgres:deb \
+  --tag=supabase/postgres:deb \
   --platform=linux/arm64 \
   --load \
   .
 mkdir -p /tmp/build ansible/files/postgres
-docker save khulnasoft/postgres:deb | tar xv -C /tmp/build
+docker save supabase/postgres:deb | tar xv -C /tmp/build
 for layer in /tmp/build/*/layer.tar; do
   tar xvf "$layer" -C ansible/files/postgres --strip-components 1
 done
 
 # build AMI
-AWS_PROFILE=khulnasoft-dev packer build \
+AWS_PROFILE=supabase-dev packer build \
   -var-file=development-arm.vars.pkr.hcl \
   -var-file=common.vars.pkr.hcl \
   -var "ansible_arguments=" \
@@ -61,5 +61,5 @@ AWS_PROFILE=khulnasoft-dev packer build \
   amazon-arm64.pkr.hcl
 
 # run tests
-AWS_PROFILE=khulnasoft-dev pytest -vv -s testinfra/test_*.py
+AWS_PROFILE=supabase-dev pytest -vv -s testinfra/test_*.py
 ```

@@ -74,13 +74,13 @@ services:
   - {
       name: admin-v1-metrics,
       url: 'https://localhost:8085/metrics/aggregated',
-      routes: [{ name: admin-v1-metrics, strip_path: true, paths: [/khulnasoft-internal/metrics] }],
+      routes: [{ name: admin-v1-metrics, strip_path: true, paths: [/supabase-internal/metrics] }],
       plugins: [{ name: cors }, { name: ip-restriction, config: { allow: [10.0.0.0/8] } }],
     }
 consumers:
   - { username: anon-key, keyauth_credentials: [{ key: anon_key }] }
   - { username: service_role-key, keyauth_credentials: [{ key: service_key }] }
-  - { username: khulnasoft-admin-key, keyauth_credentials: [{ key: khulnasoft_admin_key }] }
+  - { username: supabase-admin-key, keyauth_credentials: [{ key: supabase_admin_key }] }
 basicauth_credentials:
   - consumer: service_role-key
     username: 'service_role'

@@ -75,7 +75,7 @@ jobs:
           build-args: |
             ${{ steps.args.outputs.result }}
           target: extensions
-          tags: khulnasoft/postgres:extensions
+          tags: supabase/postgres:extensions
           platforms: linux/${{ matrix.arch }}
           outputs: type=tar,dest=/tmp/extensions.tar
           cache-from: |
@@ -103,7 +103,7 @@ jobs:
             postgresql_major=${{ steps.version.outputs.postgresql_major }}
             postgresql_release=${{ steps.version.outputs.postgresql_release }}
             CPPFLAGS=-mcpu=${{ matrix.mcpu }}
-          tags: khulnasoft/postgres:deb
+          tags: supabase/postgres:deb
           platforms: linux/${{ matrix.arch }}
           outputs: type=tar,dest=/tmp/pg-deb.tar
           cache-from: |

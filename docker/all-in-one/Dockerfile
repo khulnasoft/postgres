@@ -1,18 +1,18 @@
-ARG postgres_version=15.1.0.148
+ARG postgres_version=15.1.1.24
 
 ARG pgbouncer_release=1.18.0
 ARG postgrest_release=10.1.2
 ARG gotrue_release=2.130.0
-ARG adminapi_release=0.62.0
-ARG adminmgr_release=0.14.3
+ARG adminapi_release=0.63.5
+ARG adminmgr_release=0.19.0
 ARG vector_release=0.22.3
-ARG postgres_exporter_release=0.9.0
+ARG postgres_exporter_release=0.15.0
 ARG envoy_release=1.28.0
 
 # Update `gateway-28` in the URL below if upgrading above v2.8.x.
 ARG kong_release=2.8.1
 
-FROM khulnasoft/postgres:${postgres_version} as base
+FROM supabase/postgres:${postgres_version} as base
 ARG TARGETARCH
 ARG postgresql_major
 
@@ -61,7 +61,7 @@ FROM postgrest/postgrest:v${postgrest_release} as pgrst
 ####################
 # Install GoTrue
 ####################
-FROM khulnasoft/gotrue:v${gotrue_release} as gotrue
+FROM supabase/gotrue:v${gotrue_release} as gotrue
 
 ####################
 # Install Envoy
@@ -81,16 +81,16 @@ ADD "https://packages.konghq.com/public/gateway-28/deb/ubuntu/pool/focal/main/k/
 ####################
 FROM base as adminapi
 ARG adminapi_release
-ADD "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/khulnasoft-admin-api/v${adminapi_release}/khulnasoft-admin-api_${adminapi_release}_linux_${TARGETARCH}.tar.gz" /tmp/khulnasoft-admin-api.tar.gz
-RUN tar -xvf /tmp/khulnasoft-admin-api.tar.gz -C /tmp && \
-    rm -rf /tmp/khulnasoft-admin-api.tar.gz
+ADD "https://supabase-public-artifacts-bucket.s3.amazonaws.com/supabase-admin-api/v${adminapi_release}/supabase-admin-api_${adminapi_release}_linux_${TARGETARCH}.tar.gz" /tmp/supabase-admin-api.tar.gz
+RUN tar -xvf /tmp/supabase-admin-api.tar.gz -C /tmp && \
+    rm -rf /tmp/supabase-admin-api.tar.gz
 
 ####################
 # Install admin mgr
 ####################
 FROM base as adminmgr
 ARG adminmgr_release
-ADD "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/admin-mgr/v${adminmgr_release}/admin-mgr_${adminmgr_release}_linux_${TARGETARCH}.tar.gz" /tmp/admin-mgr.tar.gz
+ADD "https://supabase-public-artifacts-bucket.s3.amazonaws.com/admin-mgr/v${adminmgr_release}/admin-mgr_${adminmgr_release}_linux_${TARGETARCH}.tar.gz" /tmp/admin-mgr.tar.gz
 RUN tar -xvf /tmp/admin-mgr.tar.gz -C /tmp && \
     rm -rf /tmp/admin-mgr.tar.gz
 
@@ -158,13 +158,13 @@ COPY --from=pgrst /bin/postgrest /dist/
 COPY --from=gotrue /usr/local/bin/auth /dist/gotrue
 COPY --from=gotrue /usr/local/etc/auth /opt/gotrue/
 COPY --from=envoy /usr/local/bin/envoy /dist/
-COPY --from=adminapi /tmp/khulnasoft-admin-api /dist/
+COPY --from=adminapi /tmp/supabase-admin-api /dist/
 COPY --chown=root:root --from=adminmgr /tmp/admin-mgr /dist/
 COPY --from=exporter /tmp/postgres_exporter /opt/postgres_exporter/
 COPY docker/all-in-one/opt/postgres_exporter /opt/postgres_exporter/
 
 # Configuring dangling symlinks for binaries
-RUN ln -s /data/opt/khulnasoft-admin-api /opt/khulnasoft-admin-api \
+RUN ln -s /data/opt/supabase-admin-api /opt/supabase-admin-api \
     && ln -s /data/opt/postgrest /opt/postgrest \
     && ln -s /data/opt/gotrue /opt/gotrue/gotrue \
     && ln -s /data/opt/admin-mgr /usr/bin/admin-mgr
@@ -172,7 +172,7 @@ RUN ln -s /data/opt/khulnasoft-admin-api /opt/khulnasoft-admin-api \
 # Scripts for adminapi
 COPY ansible/files/admin_api_scripts /root
 COPY --chown=adminapi:adminapi docker/all-in-one/etc/adminapi /etc/adminapi
-COPY docker/all-in-one/etc/sudoers.d /etc/sudoers.d/
+COPY --chmod=644 docker/all-in-one/etc/sudoers.d /etc/sudoers.d/
 
 # Script for pg_egress_collect
 COPY --chown=adminapi:adminapi docker/all-in-one/opt/pg_egress_collect /opt/pg_egress_collect
@@ -208,7 +208,10 @@ COPY docker/all-in-one/etc/logrotate.d/postgresql.conf /etc/logrotate.d/postgres
 COPY docker/all-in-one/etc/gotrue.env /etc/gotrue.env
 
 # Customizations for envoy
+ARG envoy_release
+ADD --chmod=755 --chown=envoy:envoy "https://raw.githubusercontent.com/envoyproxy/envoy/v${envoy_release}/restarter/hot-restarter.py" /opt/envoy-hot-restarter.py
 COPY --chmod=775 --chown=envoy:envoy ansible/files/envoy_config/ /etc/envoy/
+COPY --chmod=755 --chown=envoy:envoy ansible/files/start-envoy.sh /opt/
 
 # Customizations for kong
 COPY docker/all-in-one/etc/kong/kong.conf /etc/kong/kong.conf
@@ -273,6 +276,7 @@ RUN mkdir -p /var/log/wal-g \
     && chown adminapi:adminapi /etc/wal-g/config.json \
     && echo '{"WALG_S3_PREFIX": "s3://foo/bar/"}' > /etc/wal-g/config.json
 RUN chown -R adminapi:adminapi /etc/adminapi
+RUN sed -i "s;#include = '/etc/postgresql-custom/generated-optimizations.conf';include = '/etc/postgresql-custom/generated-optimizations.conf';" /etc/postgresql/postgresql.conf
 
 # Add healthcheck and entrypoint scripts
 COPY docker/all-in-one/healthcheck.sh /usr/local/bin/

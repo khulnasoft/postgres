@@ -5,7 +5,7 @@ set -eou pipefail
 pg_isready -U postgres -h localhost -p 5432
 
 if [ -f "/tmp/init.json" ]; then
-  ADMIN_API_KEY=${ADMIN_API_KEY:-$(jq -r '.["khulnasoft_admin_key"]' /tmp/init.json)}
+  ADMIN_API_KEY=${ADMIN_API_KEY:-$(jq -r '.["supabase_admin_key"]' /tmp/init.json)}
 fi
 
 # adminapi up

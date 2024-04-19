@@ -23,7 +23,7 @@ upstream_metrics_sources:
   - name: system
     url: "https://localhost:8085/metrics"
     labels_to_attach:
-      - name: khulnasoft_project_ref
+      - name: supabase_project_ref
         value: {{ .ProjectRef }}
       - name: service_type
         value: db
@@ -31,14 +31,14 @@ upstream_metrics_sources:
   - name: postgresql
     url: "http://localhost:9187/metrics"
     labels_to_attach:
-      - name: khulnasoft_project_ref
+      - name: supabase_project_ref
         value: {{ .ProjectRef }}
       - name: service_type
         value: postgresql
   - name: gotrue
     url: "http://localhost:9122/metrics"
     labels_to_attach:
-      - name: khulnasoft_project_ref
+      - name: supabase_project_ref
         value: {{ .ProjectRef }}
       - name: service_type
         value: gotrue
@@ -47,7 +47,7 @@ monitoring:
     enabled: true
 upgrades_config:
   region: us-east-1
-  s3_bucket_name: khulnasoft-internal-artifacts-prod-bucket
+  s3_bucket_name: supabase-internal-artifacts-prod-bucket
   common_prefix: upgrades
   destination_dir: /tmp
 firewall:
@@ -66,10 +66,10 @@ firewall:
   unfiltered_ports:
     - 80
     - 443
-  managed_rules_file: /etc/nftables/khulnasoft_managed.conf
+  managed_rules_file: /etc/nftables/supabase_managed.conf
 pg_egress_collect_path: /tmp/pg_egress_collect.txt
 health_reporting:
-  api_url: {{ .KhulnasoftUrl }}
+  api_url: {{ .SupabaseUrl }}
   project_token: {{ .ReportingToken }}
   check_services:
   #   - postgres

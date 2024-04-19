@@ -30,7 +30,7 @@
 
 - name: postgis - download SFCGAL dependency
   get_url:
-    url: "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/sfcgal/SFCGAL-v{{ sfcgal_release }}.tar.gz"
+    url: "https://supabase-public-artifacts-bucket.s3.amazonaws.com/sfcgal/SFCGAL-v{{ sfcgal_release }}.tar.gz"
     dest: /tmp/SFCGAL-v{{ sfcgal_release }}.tar.gz
     checksum: "{{ sfcgal_release_checksum }}"
     timeout: 60
@@ -63,7 +63,7 @@
 
 - name: postgis - download latest release
   shell:
-    cmd: "curl -sf -L https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/postgis-{{ postgis_release }}.tar.gz -o /tmp/postgis-{{ postgis_release }}.tar.gz"
+    cmd: "curl -sf -L https://supabase-public-artifacts-bucket.s3.amazonaws.com/postgis-{{ postgis_release }}.tar.gz -o /tmp/postgis-{{ postgis_release }}.tar.gz"
 
 - name: postgis - unpack archive
   unarchive:

@@ -13,7 +13,7 @@ SELECT extensions_are(
     'pgcrypto',
     'pgjwt',
     'uuid-ossp',
-    'khulnasoft_vault'
+    'supabase_vault'
      ]
 );
 

@@ -13,7 +13,7 @@ DEFAULT_MAX_IDLE_TIME_MINUTES=${MAX_IDLE_TIME_MINUTES:-5}
 CONFIG_FILE_PATH=${CONFIG_FILE_PATH:-/etc/supa-shutdown/shutdown.conf}
 
 run_sql() {
-  psql -h localhost -U khulnasoft_admin -d postgres "$@"
+  psql -h localhost -U supabase_admin -d postgres "$@"
 }
 
 check_activity() {
@@ -33,7 +33,7 @@ WHERE pid != pg_backend_pid()
   AND client_addr IS NOT NULL 
   AND query != 'LISTEN "pgrst"'
   AND (
-    usename IN ('khulnasoft_auth_admin', 'authenticator')
+    usename IN ('supabase_auth_admin', 'authenticator')
     OR client_addr NOT IN (inet '127.0.0.1', inet '::1')
   );
 SQL

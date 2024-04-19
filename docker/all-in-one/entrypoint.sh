@@ -91,7 +91,7 @@ function setup_postgres {
   tar -xzvf "$INIT_PAYLOAD_PATH" -C / ./etc/postgresql-custom/pgsodium_root.key
   echo "include = '/etc/postgresql-custom/postgresql-platform-defaults.conf'" >> $PG_CONF
 
-  # TODO (darora): walg enablement is temporarily performed here until changes from https://github.com/khulnasoft/postgres/pull/639 get picked up
+  # TODO (darora): walg enablement is temporarily performed here until changes from https://github.com/supabase/postgres/pull/639 get picked up
   # other things will still be needed in the future (auth_delay config)
   sed -i \
       -e "s|#include = '/etc/postgresql-custom/wal-g.conf'|include = '/etc/postgresql-custom/wal-g.conf'|g" \
@@ -121,8 +121,8 @@ function setup_postgres {
 
   if [ "${DATA_VOLUME_MOUNTPOINT}" ]; then
     mkdir -p "${DATA_VOLUME_MOUNTPOINT}/opt"
-    /usr/local/bin/configure-shim.sh /dist/khulnasoft-admin-api /opt/khulnasoft-admin-api
-    /opt/khulnasoft-admin-api optimize db --destination-config-file-path /etc/postgresql-custom/generated-optimizations.conf
+    /usr/local/bin/configure-shim.sh /dist/supabase-admin-api /opt/supabase-admin-api
+    /opt/supabase-admin-api optimize db --destination-config-file-path /etc/postgresql-custom/generated-optimizations.conf
 
     # Preserve postgresql configs across restarts
     POSTGRESQL_CUSTOM_DIR="${DATA_VOLUME_MOUNTPOINT}/etc/postgresql-custom"
@@ -163,7 +163,7 @@ function setup_credentials {
   tar -xzvf "$INIT_PAYLOAD_PATH" -C / ./tmp/init.json
   export ANON_KEY=${ANON_KEY:-$(jq -r '.["anon_key"]' /tmp/init.json)}
   export SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY:-$(jq -r '.["service_key"]' /tmp/init.json)}
-  export ADMIN_API_KEY=${ADMIN_API_KEY:-$(jq -r '.["khulnasoft_admin_key"]' /tmp/init.json)}
+  export ADMIN_API_KEY=${ADMIN_API_KEY:-$(jq -r '.["supabase_admin_key"]' /tmp/init.json)}
   export JWT_SECRET=${JWT_SECRET:-$(jq -r '.["jwt_secret"]' /tmp/init.json)}
 }
 

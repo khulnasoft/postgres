@@ -17,7 +17,7 @@ if [ -f "${INIT_PAYLOAD_PATH:-}" ]; then
 fi
 
 if [ "${DATA_VOLUME_MOUNTPOINT}" ]; then
-  /opt/khulnasoft-admin-api optimize pgbouncer --destination-config-file-path /etc/pgbouncer-custom/generated-optimizations.ini
+  /opt/supabase-admin-api optimize pgbouncer --destination-config-file-path /etc/pgbouncer-custom/generated-optimizations.ini
 
   # Preserve pgbouncer configs across restarts
   PGBOUNCER_DIR="${DATA_VOLUME_MOUNTPOINT}/etc/pgbouncer"

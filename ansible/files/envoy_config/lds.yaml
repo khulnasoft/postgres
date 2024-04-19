@@ -69,7 +69,7 @@ resources:
                                     - header:
                                         name: apikey
                                         string_match:
-                                          exact: khulnasoft_admin_key
+                                          exact: supabase_admin_key
                                     - header:
                                         name: ':path'
                                         string_match:
@@ -81,7 +81,7 @@ resources:
                                     - header:
                                         name: ':path'
                                         string_match:
-                                          contains: apikey=khulnasoft_admin_key
+                                          contains: apikey=supabase_admin_key
                 - name: envoy.filters.http.lua
                   typed_config:
                     '@type': >-
@@ -135,7 +135,7 @@ resources:
                       json_format:
                         message: >-
                           `apikey` request header or query parameter is either
-                          missing or invalid. Double check your Khulnasoft `anon`
+                          missing or invalid. Double check your Supabase `anon`
                           or `service_role` API key.
                         hint: '%RESPONSE_CODE_DETAILS%'
                       json_format_options:
@@ -274,7 +274,7 @@ resources:
                           prefix: /metrics/aggregated
                         route:
                           cluster: admin_api
-                          prefix_rewrite: /khulnasoft-internal/metrics
+                          prefix_rewrite: /supabase-internal/metrics
                         typed_per_filter_config:
                           envoy.filters.http.rbac:
                             '@type': >-

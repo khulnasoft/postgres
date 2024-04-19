@@ -1,12 +1,12 @@
-# Khulnasoft All-in-One
+# Supabase All-in-One
 
-All Khulnasoft backend services bundled in a single Docker image for quick local testing and edge deployment.
+All Supabase backend services bundled in a single Docker image for quick local testing and edge deployment.
 
 ## Build
 
 ```bash
 # cwd: repo root
-docker build -f docker/all-in-one/Dockerfile -t khulnasoft/all-in-one .
+docker build -f docker/all-in-one/Dockerfile -t supabase/all-in-one .
 ```
 
 ## Run
@@ -22,7 +22,7 @@ docker run --rm -it \
     -e MACHINE_TYPE=shared_cpu_1x_512m \
     -p 5432:5432 \
     -p 8000:8000 \
-    khulnasoft/all-in-one
+    supabase/all-in-one
 ```
 
 Use bind mount to start from an existing physical backup: `-v $(pwd)/data:/var/lib/postgresql/data`
@@ -35,7 +35,7 @@ docker run --rm \
     -e INIT_PAYLOAD_PRESIGNED_URL=<init_payload_url> \
     -p 5432:5432 \
     -p 8000:8000 \
-    -it khulnasoft/all-in-one
+    -it supabase/all-in-one
 ```
 
 ## Test

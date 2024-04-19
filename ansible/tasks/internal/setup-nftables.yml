@@ -7,14 +7,14 @@
 - name: nftables empty config
   file:
     state: touch
-    path: /etc/nftables/khulnasoft_managed.conf
+    path: /etc/nftables/supabase_managed.conf
     owner: adminapi
 
 - name: include managed config
   shell: |
     cat >> "/etc/nftables.conf" << EOF
-    table inet khulnasoft_managed { }
-    include "/etc/nftables/khulnasoft_managed.conf";
+    table inet supabase_managed { }
+    include "/etc/nftables/supabase_managed.conf";
 
     EOF
 

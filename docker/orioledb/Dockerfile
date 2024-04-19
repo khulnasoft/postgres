@@ -8,7 +8,7 @@ ARG sfcgal_release=1.3.10
 ARG postgis_release=3.3.2
 ARG pgrouting_release=3.4.1
 ARG pgtap_release=1.2.0
-ARG pg_cron_release=1.4.2
+ARG pg_cron_release=1.6.2
 ARG pgaudit_release=1.7.0
 ARG pgjwt_release=9742dab1b2f297ad3811120db7b21451bca2d3c9
 ARG pgsql_http_release=1.5.0
@@ -24,9 +24,10 @@ ARG rum_release=1.3.13
 ARG pg_hashids_release=cd0e1b31d52b394a0df64079406a14a4f7387cd6
 ARG libsodium_release=1.0.18
 ARG pgsodium_release=3.1.6
-ARG pg_graphql_release=1.4.2
+ARG pg_graphql_release=1.5.1
 ARG pg_stat_monitor_release=1.1.1
 ARG pg_jsonschema_release=0.2.0
+ARG pg_repack_release=1.4.8
 ARG vault_release=0.2.8
 ARG groonga_release=12.0.8
 ARG pgroonga_release=2.4.0
@@ -34,7 +35,8 @@ ARG wrappers_release=0.2.0
 ARG hypopg_release=1.3.1
 ARG pgvector_release=0.4.0
 ARG pg_tle_release=1.3.2
-ARG supautils_release=1.9.0
+ARG index_advisor_release=0.2.0
+ARG supautils_release=2.2.0
 ARG wal_g_release=2.0.1
 
 ####################
@@ -92,7 +94,7 @@ FROM ccache as sfcgal
 ARG sfcgal_release
 ARG sfcgal_release_checksum
 ADD --checksum=${sfcgal_release_checksum} \
-    "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/sfcgal/SFCGAL-v${sfcgal_release}.tar.gz" \
+    "https://supabase-public-artifacts-bucket.s3.amazonaws.com/sfcgal/SFCGAL-v${sfcgal_release}.tar.gz" \
     /tmp/sfcgal.tar.gz
 RUN tar -xvf /tmp/sfcgal.tar.gz -C /tmp --one-top-level --strip-components 1 && \
     rm -rf /tmp/sfcgal.tar.gz
@@ -106,7 +108,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build from source
 WORKDIR /tmp/sfcgal/build
 RUN cmake ..
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=yes --fstrans=no --backup=no --pakdir=/tmp --pkgname=sfcgal --pkgversion=${sfcgal_release} --requires=libgmpxx4ldbl,libboost-serialization1.71.0,libmpfr6 --nodoc
@@ -116,7 +118,7 @@ FROM sfcgal as postgis-source
 ARG postgis_release
 ARG postgis_release_checksum
 ADD --checksum=${postgis_release_checksum} \
-    "https://khulnasoft-public-artifacts-bucket.s3.amazonaws.com/postgis-${postgis_release}.tar.gz" \
+    "https://supabase-public-artifacts-bucket.s3.amazonaws.com/postgis-${postgis_release}.tar.gz" \
     /tmp/postgis.tar.gz
 RUN tar -xvf /tmp/postgis.tar.gz -C /tmp && \
     rm -rf /tmp/postgis.tar.gz
@@ -133,7 +135,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build from source
 WORKDIR /tmp/postgis-${postgis_release}
 RUN ./configure --with-sfcgal
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --requires=libgeos-c1v5,libproj15,libjson-c4,libprotobuf-c1,libgdal26 --nodoc
@@ -157,7 +159,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build from source
 WORKDIR /tmp/pgrouting-${pgrouting_release}/build
 RUN cmake -DBUILD_HTML=OFF -DBUILD_DOXY=OFF ..
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --pkgname=pgrouting --pkgversion=${pgrouting_release} --nodoc
@@ -196,7 +198,7 @@ RUN tar -xvf /tmp/pg_cron.tar.gz -C /tmp && \
 WORKDIR /tmp/pg_cron-${pg_cron_release}
 # error: redefinition of typedef 'snapshot_hook_type' is a C11 feature [-Werror,-Wtypedef-redefinition]
 RUN sed -i -e "s|-std=c99|-std=c11|g" Makefile
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -221,7 +223,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build from source
 WORKDIR /tmp/pgaudit-${pgaudit_release}
 ENV USE_PGXS=1
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -258,7 +260,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # Build from source
 WORKDIR /tmp/pgsql-http-${pgsql_http_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --requires=libcurl3-gnutls --nodoc
@@ -281,7 +283,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # Build from source
 WORKDIR /tmp/plpgsql_check-${plpgsql_check_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -300,7 +302,7 @@ RUN tar -xvf /tmp/pg-safeupdate.tar.gz -C /tmp && \
     rm -rf /tmp/pg-safeupdate.tar.gz
 # Build from source
 WORKDIR /tmp/pg-safeupdate-${pg_safeupdate_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -326,7 +328,7 @@ RUN sed -i \
     -e "1981s|);|, NULL);|g" \
     -e "2567s|);|, NULL);|g" \
     ../src/nodes/hypertable_modify.c
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --pkgname=timescaledb --pkgversion=${timescaledb_release} --nodoc
@@ -345,7 +347,7 @@ RUN tar -xvf /tmp/wal2json.tar.gz -C /tmp --one-top-level --strip-components 1 &
     rm -rf /tmp/wal2json.tar.gz
 # Build from source
 WORKDIR /tmp/wal2json
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 ENV version=${wal2json_release}
@@ -360,7 +362,7 @@ FROM builder as pljava-source
 ARG pljava_release=master
 ARG pljava_release_checksum=sha256:e99b1c52f7b57f64c8986fe6ea4a6cc09d78e779c1643db060d0ac66c93be8b6
 ADD --checksum=${pljava_release_checksum} \
-    "https://github.com/khulnasoft/pljava/archive/refs/heads/${pljava_release}.tar.gz" \
+    "https://github.com/supabase/pljava/archive/refs/heads/${pljava_release}.tar.gz" \
     /tmp/pljava.tar.gz
 RUN tar -xvf /tmp/pljava.tar.gz -C /tmp && \
     rm -rf /tmp/pljava.tar.gz
@@ -400,7 +402,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build from source
 WORKDIR /tmp/plv8-${plv8_release}
 ENV DOCKER=1
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -408,7 +410,7 @@ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
 FROM scratch as plv8-deb
 COPY --from=plv8-source /tmp/*.deb /tmp/
 
-FROM ghcr.io/khulnasoft/plv8:${plv8_release}-pg${postgresql_major} as plv8
+FROM ghcr.io/supabase/plv8:${plv8_release}-pg${postgresql_major} as plv8
 
 ####################
 # 14-pg_plan_filter.yml
@@ -420,7 +422,7 @@ ADD "https://github.com/pgexperts/pg_plan_filter.git#${pg_plan_filter_release}" 
     /tmp/pg_plan_filter-${pg_plan_filter_release}
 # Build from source
 WORKDIR /tmp/pg_plan_filter-${pg_plan_filter_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --pkgversion=1 --nodoc
@@ -433,7 +435,7 @@ FROM ccache as pg_net-source
 ARG pg_net_release
 ARG pg_net_release_checksum
 ADD --checksum=${pg_net_release_checksum} \
-    "https://github.com/khulnasoft/pg_net/archive/refs/tags/v${pg_net_release}.tar.gz" \
+    "https://github.com/supabase/pg_net/archive/refs/tags/v${pg_net_release}.tar.gz" \
     /tmp/pg_net.tar.gz
 RUN tar -xvf /tmp/pg_net.tar.gz -C /tmp && \
     rm -rf /tmp/pg_net.tar.gz
@@ -443,7 +445,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # Build from source
 WORKDIR /tmp/pg_net-${pg_net_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --requires=libcurl3-gnutls --nodoc
@@ -483,7 +485,7 @@ RUN sed -i \
     -e "2308s|static ||g" \
     src/tuplesort15.c
 ENV USE_PGXS=1
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -510,14 +512,14 @@ FROM ccache as libsodium
 ARG libsodium_release
 ARG libsodium_release_checksum
 ADD --checksum=${libsodium_release_checksum} \
-    "https://download.libsodium.org/libsodium/releases/libsodium-${libsodium_release}.tar.gz" \
+    "https://supabase-public-artifacts-bucket.s3.amazonaws.com/libsodium/libsodium-${libsodium_release}.tar.gz" \
     /tmp/libsodium.tar.gz
 RUN tar -xvf /tmp/libsodium.tar.gz -C /tmp && \
     rm -rf /tmp/libsodium.tar.gz
 # Build from source
 WORKDIR /tmp/libsodium-${libsodium_release}
 RUN ./configure
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 RUN make install
 
@@ -532,7 +534,7 @@ RUN tar -xvf /tmp/pgsodium.tar.gz -C /tmp && \
     rm -rf /tmp/pgsodium.tar.gz
 # Build from source
 WORKDIR /tmp/pgsodium-${pgsodium_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --requires=libsodium23 --nodoc
@@ -545,7 +547,7 @@ FROM rust-toolchain as pg_graphql-source
 ARG pg_graphql_release
 ARG pg_graphql_release_checksum
 ADD --checksum=${pg_graphql_release_checksum} \
-    "https://github.com/khulnasoft/pg_graphql/archive/refs/tags/v${pg_graphql_release}.tar.gz" \
+    "https://github.com/supabase/pg_graphql/archive/refs/tags/v${pg_graphql_release}.tar.gz" \
     /tmp/pg_graphql.tar.gz
 RUN tar -xvf /tmp/pg_graphql.tar.gz -C /tmp && \
     rm -rf /tmp/pg_graphql.tar.gz
@@ -584,7 +586,7 @@ RUN touch ${package_dir}/DEBIAN/control
 RUN echo 'Package: pg-graphql' >> ${package_dir}/DEBIAN/control
 RUN echo 'Version:' ${pg_graphql_release} >> ${package_dir}/DEBIAN/control
 RUN echo "Architecture: ${TARGETARCH}" >> ${package_dir}/DEBIAN/control
-RUN echo 'Maintainer: khulnasoft' >> ${package_dir}/DEBIAN/control
+RUN echo 'Maintainer: supabase' >> ${package_dir}/DEBIAN/control
 RUN echo 'Description: A PostgreSQL extension' >> ${package_dir}/DEBIAN/control
 
 # Create deb package
@@ -608,7 +610,7 @@ RUN tar -xvf /tmp/pg_stat_monitor.tar.gz -C /tmp && \
 # Build from source
 WORKDIR /tmp/pg_stat_monitor-${pg_stat_monitor_release}
 ENV USE_PGXS=1
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -625,7 +627,7 @@ FROM rust-toolchain as pg_jsonschema-source
 ARG pg_jsonschema_release
 ARG pg_jsonschema_release_checksum
 ADD --checksum=${pg_jsonschema_release_checksum} \
-    "https://github.com/khulnasoft/pg_jsonschema/archive/refs/tags/v${pg_jsonschema_release}.tar.gz" \
+    "https://github.com/supabase/pg_jsonschema/archive/refs/tags/v${pg_jsonschema_release}.tar.gz" \
     /tmp/pg_jsonschema.tar.gz
 RUN tar -xvf /tmp/pg_jsonschema.tar.gz -C /tmp && \
     rm -rf /tmp/pg_jsonschema.tar.gz
@@ -665,7 +667,7 @@ RUN touch ${package_dir}/DEBIAN/control
 RUN echo 'Package: pg-jsonschema' >> ${package_dir}/DEBIAN/control
 RUN echo 'Version:' ${pg_jsonschema_release} >> ${package_dir}/DEBIAN/control
 RUN echo "Architecture: ${TARGETARCH}" >> ${package_dir}/DEBIAN/control
-RUN echo 'Maintainer: khulnasoft' >> ${package_dir}/DEBIAN/control
+RUN echo 'Maintainer: supabase' >> ${package_dir}/DEBIAN/control
 RUN echo 'Description: A PostgreSQL extension' >> ${package_dir}/DEBIAN/control
 
 # Create deb package
@@ -682,7 +684,7 @@ FROM builder as vault-source
 ARG vault_release
 ARG vault_release_checksum
 ADD --checksum=${vault_release_checksum} \
-    "https://github.com/khulnasoft/vault/archive/refs/tags/v${vault_release}.tar.gz" \
+    "https://github.com/supabase/vault/archive/refs/tags/v${vault_release}.tar.gz" \
     /tmp/vault.tar.gz
 RUN tar -xvf /tmp/vault.tar.gz -C /tmp && \
     rm -rf /tmp/vault.tar.gz
@@ -719,7 +721,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build from source
 WORKDIR /tmp/groonga-${groonga_release}
 RUN ./configure
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=yes --fstrans=no --backup=no --pakdir=/tmp --requires=zlib1g,liblz4-1,libzstd1,libmsgpackc2,libzmq5,libevent-2.1-7,libmecab2 --nodoc
@@ -735,7 +737,7 @@ RUN tar -xvf /tmp/pgroonga.tar.gz -C /tmp && \
     rm -rf /tmp/pgroonga.tar.gz
 # Build from source
 WORKDIR /tmp/pgroonga-${pgroonga_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --requires=mecab-naist-jdic --nodoc
@@ -754,7 +756,7 @@ RUN cargo pgrx init --pg${postgresql_major} $(which pg_config)
 ARG wrappers_release
 ARG wrappers_release_checksum
 ADD --checksum=${wrappers_release_checksum} \
-    "https://github.com/khulnasoft/wrappers/archive/refs/tags/v${wrappers_release}.tar.gz" \
+    "https://github.com/supabase/wrappers/archive/refs/tags/v${wrappers_release}.tar.gz" \
     /tmp/wrappers.tar.gz
 RUN tar -xvf /tmp/wrappers.tar.gz -C /tmp && \
     rm -rf /tmp/wrappers.tar.gz
@@ -810,7 +812,7 @@ RUN touch ${package_dir}/DEBIAN/control
 RUN echo 'Package: wrappers' >> ${package_dir}/DEBIAN/control
 RUN echo 'Version:' ${wrappers_release} >> ${package_dir}/DEBIAN/control
 RUN echo "Architecture: ${TARGETARCH}" >> ${package_dir}/DEBIAN/control
-RUN echo 'Maintainer: khulnasoft' >> ${package_dir}/DEBIAN/control
+RUN echo 'Maintainer: supabase' >> ${package_dir}/DEBIAN/control
 RUN echo 'Description: A PostgreSQL extension' >> ${package_dir}/DEBIAN/control
 
 # Create deb package
@@ -833,10 +835,36 @@ RUN tar -xvf /tmp/hypopg.tar.gz -C /tmp && \
     rm -rf /tmp/hypopg.tar.gz
 # Build from source
 WORKDIR /tmp/hypopg-${hypopg_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
+
+####################
+ # 27-pg_repack.yml
+ ####################
+ FROM ccache as pg_repack-source
+ ARG pg_repack_release
+ ARG pg_repack_release_checksum
+ ADD --checksum=${pg_repack_release_checksum} \
+     "https://github.com/reorg/pg_repack/archive/refs/tags/ver_${pg_repack_release}.tar.gz" \
+     /tmp/pg_repack.tar.gz
+ RUN tar -xvf /tmp/pg_repack.tar.gz -C /tmp && \
+     rm -rf /tmp/pg_repack.tar.gz
+ # Install build dependencies
+ RUN apt-get update && apt-get install -y --no-install-recommends \
+     liblz4-dev \
+     libz-dev \
+     libzstd-dev \
+     libreadline-dev \
+     && rm -rf /var/lib/apt/lists/*
+ # Build from source
+ WORKDIR /tmp/pg_repack-ver_${pg_repack_release}
+ ENV USE_PGXS=1
+ RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
+     make -j$(nproc)
+ # Create debian package
+ RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --pkgversion=${pg_repack_release} --nodoc
 
 ####################
 # 28-pgvector.yml
@@ -853,7 +881,7 @@ RUN tar -xvf /tmp/pgvector.tar.gz -C /tmp && \
 WORKDIR /tmp/pgvector-${pgvector_release}
 # error: the clang compiler does not support '-march=native'
 RUN sed -i -e "s|-march=native||g" Makefile
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -875,7 +903,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # Build from source
 WORKDIR /tmp/pg_tle-${pg_tle_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
+    make -j$(nproc)
+# Create debian package
+RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
+
+######################
+# 30-index_advisor.yml
+######################
+FROM ccache as index_advisor
+ARG index_advisor_release
+ARG index_advisor_release_checksum
+ADD --checksum=${index_advisor_release_checksum} \
+    "https://github.com/olirice/index_advisor/archive/refs/tags/v${index_advisor_release}.tar.gz" \
+    /tmp/index_advisor.tar.gz
+RUN tar -xvf /tmp/index_advisor.tar.gz -C /tmp && \
+    rm -rf /tmp/index_advisor.tar.gz
+# Build from source
+WORKDIR /tmp/index_advisor-${index_advisor_release}
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -887,7 +933,7 @@ FROM ccache as supautils-source
 ARG supautils_release
 ARG supautils_release_checksum
 ADD --checksum=${supautils_release_checksum} \
-    "https://github.com/khulnasoft/supautils/archive/refs/tags/v${supautils_release}.tar.gz" \
+    "https://github.com/supabase/supautils/archive/refs/tags/v${supautils_release}.tar.gz" \
     /tmp/supautils.tar.gz
 RUN tar -xvf /tmp/supautils.tar.gz -C /tmp && \
     rm -rf /tmp/supautils.tar.gz
@@ -897,7 +943,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # Build from source
 WORKDIR /tmp/supautils-${supautils_release}
-RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/khulnasoft/postgres:ccache \
+RUN --mount=type=cache,target=/ccache,from=public.ecr.aws/supabase/postgres:ccache \
     make -j$(nproc)
 # Create debian package
 RUN checkinstall -D --install=no --fstrans=no --backup=no --pakdir=/tmp --nodoc
@@ -944,8 +990,10 @@ COPY --from=vault-source /tmp/*.deb /tmp/
 COPY --from=pgroonga-source /tmp/*.deb /tmp/
 COPY --from=wrappers-source /tmp/*.deb /tmp/
 COPY --from=hypopg-source /tmp/*.deb /tmp/
+COPY --from=pg_repack-source /tmp/*.deb /tmp/
 COPY --from=pgvector-source /tmp/*.deb /tmp/
 COPY --from=pg_tle-source /tmp/*.deb /tmp/
+COPY --from=index_advisor /tmp/*.deb /tmp/
 COPY --from=supautils-source /tmp/*.deb /tmp/
 
 ####################
@@ -961,7 +1009,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     /tmp/*.deb \
     # Needed for anything using libcurl
-    # https://github.com/khulnasoft/postgres/issues/573
+    # https://github.com/supabase/postgres/issues/573
     ca-certificates \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
